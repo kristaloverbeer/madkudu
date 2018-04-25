@@ -12,4 +12,4 @@ class Event(db.Model):
     id = db.Column(Integer, primary_key=True, autoincrement=True)
     user_id = db.Column(String, nullable=False)
     name = db.Column(String, nullable=False)
-    timestamp = db.Column(DateTime, default=datetime.datetime.utcnow)
+    timestamp = db.Column(DateTime, nullable=False, default=datetime.datetime.utcnow)
