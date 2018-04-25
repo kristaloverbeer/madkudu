@@ -1,4 +1,5 @@
-from typing import Tuple
+import datetime
+from typing import Tuple, Union, List
 
 from src.database.models.event import db, Event
 from src.database.schema.event_schema import EventSchema
@@ -18,10 +19,20 @@ class WebsiteEventRepository(LoggingMixin):
 
         return {'message': 'Success'}, 201
 
-    def get_user_statistics(self, queried_user_id: str) -> Tuple[dict, int]:
-        user_events = Event.query.filter_by(user_id=queried_user_id).all()
+    def get_user_events_last_7_days(self, queried_user_id: str) -> Tuple[Union[dict, List[dict]], int]:
+        all_user_events = Event.query.filter_by(user_id=queried_user_id)
+
+        last_week_datetime = datetime.datetime.utcnow() - datetime.timedelta(days=7)
+        user_events_for_last_7_days = all_user_events.filter(Event.timestamp >= last_week_datetime)
+
+        user_events = user_events_for_last_7_days.all()
+
         if not user_events:
-            return {'message': 'Requested user does not exist: {}'.format(queried_user_id)}, 400
+            return {
+                       'message': 'Requested user does not exist or did not connect to the website in the last 7 days: '
+                                  '{}'.format(queried_user_id)
+                   }, 400
+
         serialized_user_events, errors = self.event_schema.dump(user_events, many=True)
         if errors:
             return errors, 400

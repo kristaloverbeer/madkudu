@@ -1,6 +1,7 @@
 from flask import Blueprint, Response, request, make_response, jsonify
 from flask_cors import CORS
 
+from src.core.statistics import Statistics
 from src.database.schema.event_schema import EventSchema
 from src.repository.website_event_repository import WebsiteEventRepository
 
@@ -21,12 +22,13 @@ def add_website_event() -> Response:
 
 
 @website_events_blueprint.route('/users/<user_id>', methods=['GET', 'DELETE'])
-def get_user_statistics(user_id: str) -> Response:
+def users(user_id: str) -> Response:
     event_schema = EventSchema(only=('user_id', 'name', 'timestamp'))
     event_repository = WebsiteEventRepository(event_schema)
 
     if request.method == 'GET':
-        data_or_error_message, status_code = event_repository.get_user_statistics(user_id)
+        statistics = Statistics(event_repository)
+        data_or_error_message, status_code = statistics.get_user_statistics(user_id)
         return make_response(jsonify(data_or_error_message), status_code)
 
     elif request.method == 'DELETE':
