@@ -1,4 +1,3 @@
-import datetime
 from collections import Counter
 from typing import Tuple, List
 
@@ -24,7 +23,7 @@ class Statistics(LoggingMixin):
             'most_viewed_page_last_7_days': self._get_most_viewed_page_last_7_days(user_events),
         }
 
-        return statistics, 200
+        return statistics, status_code
 
     def _get_number_of_days_active_last_7_days(self, user_events: List[dict]) -> int:
         events_timestamps = [
