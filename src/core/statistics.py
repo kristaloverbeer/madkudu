@@ -5,6 +5,10 @@ from src.logging.mixin import LoggingMixin
 from src.repository.website_event_repository import WebsiteEventRepository
 
 
+# TODO: create a named tuple session = NamedTuple('Session', 'start, end, duration')
+# TODO: create a User class (events, [session])
+# TODO: create properties corresponding to the statistics we need to expose
+# TODO: create function get_sessions() to populate self.sessions: [session]
 class Statistics(LoggingMixin):
     def __init__(self, event_repository: WebsiteEventRepository) -> None:
         self.event_repository = event_repository
