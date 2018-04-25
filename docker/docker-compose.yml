@@ -1,0 +1,32 @@
+version: "3.3"
+
+services:
+
+  api:
+    container_name: api
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    volumes:
+      - ./:/src
+    depends_on:
+      - database
+    environment: &environment
+      - LOGGING_LEVEL=DEBUG
+      - POSTGRES_HOST=database
+      - POSTGRES_PORT=5432
+      - POSTGRES_USER=madkudu
+      - POSTGRES_PASSWORD=madkudu
+      - POSTGRES_DB=website
+    ports:
+      - "8080:8080"
+    command: >
+      gunicorn --log-level debug --access-logfile - --capture-output --workers 4 --reload --bind 0.0.0.0:8080 wsgi:api
+
+  database:
+    container_name: database
+    image: postgres:9.6-alpine
+    environment: *environment
+    restart: always
+    ports:
+      - "5432:5432"
